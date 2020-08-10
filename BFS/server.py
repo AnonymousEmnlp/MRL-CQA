@@ -81,6 +81,7 @@ def post_res():
 if __name__ == '__main__':
     print("loading knowledge base...")
     global graph
+    # TODO using project path instead of using wuwei
     graph=pickle.load(open('/data/wuwei/data/wikidata.pkl','rb'))
     print("graph Load done!")
     global type_dict

@@ -19,7 +19,7 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
 
     # # command line parameters for final test
-    # sys.argv = ['data_test.py', '-m=bleu_0.984_09.dat', '-p=final', '--n=rl_even']
+    # sys.argv = ['data_test_maml.py', '-m=bleu_0.984_09.dat', '-p=final', '--n=rl_even']
     # command line parameters for final test (subset data)
     # Args for 1st-order maml.
     sys.argv = ['data_test_maml.py', '-m=epoch_025_0.741_0.710.dat', '-p=sample_final_maml', '--n=maml_newdata2k_1storder_1e-3', '--cuda', '-s=5', '-a=0', '--att=0', '--lstm=1', '--fast-lr=1e-3', '--meta-lr=1e-4', '--steps=5', '--batches=1', '--weak=1', '--embed-grad']
