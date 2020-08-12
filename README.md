@@ -1,9 +1,19 @@
-# MRL-CQA: MRL-CQA for EMNLP 2020 submission.
+# MRL-CQA: for EMNLP 2020 submission.
 We aim to solve the CQA task [1], which is answering factual questions through complex inferring over a realistic-sized KG of millions of entities.
 The CQA dataset could be downloaded from `https://amritasaha1812.github.io/CSQA/download_CQA/`.
 
-The questions could be categorized into seven groups, and the typical examples of these seven question types are displayed in the following table.  
-
+The questions could be categorized into seven groups, and the typical examples of these seven question types are displayed in the following table.
+  
+   Question Type   |  Question                              |  KB artifacts          |  Action Sequence   |        Answer
+   -------- | --------  | -------- | --------| -------- |
+   Simple | Which administrative territory is Danilo Ribeiro an inhabitant of? | E1: Danilo Ribeiro <br> R1: country of citizenship <br> T1: administrative territory | Select(E1, R1, T1) | Brazil 
+   Logical | Which administrative territories are twin towns of London but not Bern? | E1: London <br> E2: Bern <br> R1: twinned adm. body <br> T1: administrative territory | Select(E1, R1, T1) <br> Diff(E2, R1, T1) | Sylhet, Tokyo, Podgorica, <br> Phnom Penh, Delhi, <br> Los Angeles, Sofia, New Delhi, ...
+   Quantitative | Which sports teams have min number of stadia or architectural structures as their home venue? | R1: home venue <br> T1: sports team <br> T2: stadium <br> T3: architectural structure | SelectAll(T1, R1, T2) <br> SelectAll(T1, R1, T3) <br> ArgMin() | Detroit Tigers, Drbak-Frogn IL, <br> Club Sport Emelec, Chunichi Dragons, ...
+   Comparative | Which buildings are a part of lesser number of architectural structures and universities than Midtown Tower? | E1: Midtown Tower <br> R1: part of <br> T1: building <br> T2: architectural structure <br> T3: university | SelectAll(T1, R1, T2) <br> SelectAll(T1, R1, T3) <br> LessThan(E1) | Amsterdam Centraal, Hospital de Sant Pau, <br> Budapest Western Railway Terminal, <br> El Castillo, ...
+   Verification | Is Alda Pereira-Lemaitre a citizen of France and Emmelsbull-Horsbull? | E1: Alda Pereira-Lemaitre <br> E2: France <br> E3: Emmelsbull-Horsbull <br> R1: country of citizenship <br> T1: administrative territory | Select(E1, R1, T1) <br> Bool(E2) <br> Bool(E3) | YES and NO respectively
+   Quantitative Count | How many assemblies or courts have control over the jurisdiction of Free Hanseatic City of Bremen? | E1: Bremen <br> R1: applies to jurisdiction <br> T1: deliberative assembly <br> T2: court | Select(E1, R1, T1) <br> Union(E1, R1, T2) <br> Count() | 2
+   Comparative Count | How many art genres express more number of humen or concepts than floral painting? | E1: floral painting <br> R1: depicts <br> T1: art genre <br> T2: human <br> t3: concept | SelectAll(T1, R1, T2) <br> SelectAll(T1, R1, T3) <br> GreaterThan(E1) <br> Count() | 8
+    
 ---
 
 Now we will talk about how to training and testing our proposed model.
@@ -85,17 +95,17 @@ Now we will talk about how to training and testing our proposed model.
   ```
   python data_test_maml.py
   ```
-  We could find the generated action sequences in the folder where the model is in (for instance `MRL-CQA/data/saves/maml_reptile`), which is stored in the file `final_maml_predict.actions` or `sample_final_maml_predict.actions`.   
+  We could find the generated action sequences in the folder where the model is in (for instance `MRL-CQA/data/saves/maml_reptile`), which is stored in the file `sample_final_maml_predict.actions` or `final_maml_predict.actions`.   
   
   (4). Calculating the result.
   After generating the actions, we could use them to compute the QA result.  
-  For example, we use the saved model `MRL-CQA/data/saves/maml_reptile/epoch_020_0.784_0.741.dat` to predict actions for sample testing questions, and therefore generate a file `MRL-CQA/data/saves/maml_reptile/final_maml_predict.actions` to record the generated actions for the testing questions.  
+  For example, we use the saved model `MRL-CQA/data/saves/maml_reptile/epoch_020_0.784_0.741.dat` to predict actions for the sample testing questions, and therefore generate a file `MRL-CQA/data/saves/maml_reptile/sample_final_maml_predict.actions` to record the generated actions for the testing questions.  
   Then in the file `MRL-CQA/S2SRL/SymbolicExecutor/calculate_sample_test_dataset.py`, we set the parameters as follows.  
   In the function `transMask2ActionMAML()`, we have a line of the code: 
   ```
   with open(path, 'r') as load_f, open("../../data/saves/maml_reptile/sample_final_maml_predict.actions", 'r') as predict_actions:
   ```
-  , which is used to compute the accuracy of the actions stored in the file `MRL-CQA/data/saves/maml_reptile/final_maml_predict.actions`.  
+  , which is used to compute the accuracy of the actions stored in the file `MRL-CQA/data/saves/maml_reptile/sample_final_maml_predict.actions`.  
   We could change the path of the generated file in the above line of the code.  
   Then we run the file `MRL-CQA/S2SRL/SymbolicExecutor/calculate_sample_test_dataset.py` to compute the final  result:
   ```
