@@ -392,5 +392,5 @@ def calculate_MAML_result(file_path, withint):
     fw.close()
 
 if __name__ == "__main__":
-    calculate_RL_or_DL_result('crossent_even_1%_att=0_withINT', withint=True)
-    # calculate_MAML_result('maml_1%_batch8_att=0', withint=True)
+    # calculate_RL_or_DL_result('crossent_even_1%_att=0_withINT', withint=True)
+    calculate_MAML_result('maml_reptile', withint=False)
