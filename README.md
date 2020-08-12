@@ -83,6 +83,14 @@
   After generating the actions, we could use them to compute the QA result.
   For example, we use the saved model `MRL-CQA/data/saves/maml_reptile/epoch_020_0.784_0.741.dat`, and therefore generate a file `MRL-CQA/data/saves/maml_reptile/final_maml_predict.actions` to record the generated actions for the testing questions.
   Then in file `MRL-CQA/S2SRL/SymbolicExecutor/calculate_sample_test_dataset.py`, we set the parameters.
-   
- 
-       
+  In the function `transMask2ActionMAML()`, we have a line of the code: 
+  ```
+ with open(path, 'r') as load_f, open("../../data/saves/maml_reptile/sample_final_maml_predict.actions", 'r') as predict_actions:
+  ```
+ , which is used to compute the accuracy of the actions stored in the file `MRL-CQA/data/saves/maml_reptile/final_maml_predict.actions`.
+ We could change the path of the generated file in the above line of the code.
+ Then we run the file `MRL-CQA/S2SRL/SymbolicExecutor/calculate_sample_test_dataset.py` to compute the final result:
+ ```
+ python calculate_sample_test_dataset.py
+ ```
+ The result will be stored in the file `MRL-CQA/data/auto_QA_data/test_result/maml_reptile.txt`.
