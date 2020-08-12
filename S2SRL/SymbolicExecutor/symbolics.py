@@ -640,8 +640,8 @@ if __name__ == "__main__":
     # for e in kb.find('Q2619632', 'P138'):
     #     print(e,kb.is_A(e))
     # 'e' is the keys of returned dictionary.
-    # result_dict = kb.select('Q2619632', 'P138', 'Q355304')
-    result_dict = kb.around('Q17', 'P180', 'Q15989253')
+    result_dict = kb.select('Q2619632', 'P138', 'Q355304')
+    # result_dict = kb.around('Q17', 'P180', 'Q15989253')
     for e in result_dict:
         # 'val' is the set corresponding to the key.
         val = result_dict[e]

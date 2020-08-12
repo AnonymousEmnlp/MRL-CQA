@@ -6,11 +6,9 @@ import argparse
 import logging
 import numpy as np
 from tensorboardX import SummaryWriter
-
-from libbots import data, model, utils, metalearner, retriever_module
+from libbots import data, model, utils, metalearner
 
 import torch
-import torch.optim as optim
 import time
 import ptan
 
@@ -22,12 +20,11 @@ TRAIN_RATIO = 0.985
 GAMMA = 0.05
 
 DIC_PATH = '../data/auto_QA_data/share.question'
-TRAIN_QUESTION_ANSWER_PATH = '../data/auto_QA_data/mask_even_1.0%/RL_train_TR_new_10.question'
+TRAIN_QUESTION_ANSWER_PATH = '../data/auto_QA_data/mask_even_1.0%/RL_train_TR_new_2k.question'
 TRAIN_944K_QUESTION_ANSWER_PATH = '../data/auto_QA_data/CSQA_DENOTATIONS_full_944K.json'
 DICT_944K = '../data/auto_QA_data/CSQA_result_question_type_944K.json'
 DICT_944K_WEAK = '../data/auto_QA_data/CSQA_result_question_type_count944K.json'
 ORDERED_QID_QUESTION_DICT = '../data/auto_QA_data/CSQA_result_question_type_count944k_orderlist.json'
-RETRIEVER_PARAM = '../data/saves/retriever/AdaBound_DocEmbed_QueryEmbed_epoch_140_4.306.dat'
 QTYPE_DOC_RANGE = '../data/auto_QA_data/944k_rangeDict.json'
 log = logging.getLogger("train")
 
@@ -62,11 +59,8 @@ def run_test(test_data, net, rev_emb_dict, end_token, device="cuda"):
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
     # # command line parameters
-    # # -a=True means using adaptive reward to train the model. -a=False is using 0-1 reward.
-    # sys.argv = ['train_reptile_maml_true_reward.py', '--cuda', '-l=../data/saves/rl_even_TR_batch8_1%/truereward_0.739_29.dat', '-n=maml_1%_batch8_att=0_test', '-s=5', '-a=0', '--att=0', '--lstm=1', '--fast-lr=0.1', '--meta-lr=1e-4', '--steps=5', '--batches=1', '--weak=1']
     sys.argv = ['train_reptile_maml_true_reward.py', '-l=../data/saves/rl_even_TR_batch8_1%/truereward_0.739_29.dat',
-                '-n=maml_att=0_newdata2k_reptile_test', '--cuda', '-s=5', '-a=0', '--att=0', '--lstm=1', '--fast-lr=1e-4',
-                '--meta-lr=1e-4', '--steps=5', '--batches=1', '--weak=1', '--embed-grad', '--beta=0.1']
+                '-n=maml_att=0_newdata2k_reptile_test', '--cuda', '-s=5', '-a=0', '--att=0', '--lstm=1', '--fast-lr=1e-4', '--meta-lr=1e-4', '--steps=5', '--batches=1', '--weak=1', '--beta=0.1']
     parser = argparse.ArgumentParser()
     parser.add_argument("--cuda", action='store_true', default=False, help="Enable cuda")
     parser.add_argument("-n", "--name", required=True, help="Name of the run")
@@ -114,7 +108,6 @@ if __name__ == "__main__":
     saves_path = os.path.join(SAVES_DIR, args.name)
     os.makedirs(saves_path, exist_ok=True)
 
-    # TODO: In maml, all data points in 944K training dataset will be used. So it is much better to use the dict of 944K training the model from scratch.
     # # List of (question, {question information and answer}) pairs, the training pairs are in format of 1:1.
     phrase_pairs, emb_dict = data.load_data_MAML(QUESTION_PATH=TRAIN_QUESTION_ANSWER_PATH, DIC_PATH=DIC_PATH, max_tokens=MAX_TOKENS)
     log.info("Obtained %d phrase pairs with %d uniq words from %s.", len(phrase_pairs), len(emb_dict), TRAIN_QUESTION_ANSWER_PATH)
@@ -185,22 +178,14 @@ if __name__ == "__main__":
     docID_dict, _ = data.get_docID_indices(data.get_ordered_docID_document(ORDERED_QID_QUESTION_DICT))
     # Index -> qid.
     rev_docID_dict = {id: doc for doc, id in docID_dict.items()}
-
     qtype_docs_range = data.load_json(QTYPE_DOC_RANGE)
-
-    retriever_net = retriever_module.RetrieverModel(emb_size=50, dict_size=len(docID_dict), EMBED_FLAG=args.docembed_grad,
-                         device=device).to(device)
-    retriever_net.cuda()
-    log.info("Retriever model: %s", retriever_net)
-    retriever_net.load_state_dict(torch.load(RETRIEVER_PARAM))
-    log.info("Retriever model loaded from %s, continue training in RL mode...", str(RETRIEVER_PARAM))
 
     writer = SummaryWriter(comment="-" + args.name)
     # BEGIN token
     beg_token = torch.LongTensor([emb_dict[data.BEGIN_TOKEN]]).to(device)
     beg_token = beg_token.cuda()
 
-    metaLearner = metalearner.MetaLearner(net=net, retriever_net=retriever_net, device=device, beg_token=beg_token, end_token=end_token, adaptive=args.adaptive, samples=args.samples, train_data_support_944K=train_data_944K, rev_emb_dict=rev_emb_dict, first_order=args.first_order, fast_lr=args.fast_lr, meta_optimizer_lr=args.meta_lr, dial_shown=False, dict=dict944k, dict_weak=dict944k_weak, steps=args.steps, weak_flag=args.weak, query_embed = args.query_embed)
+    metaLearner = metalearner.MetaLearner(net=net, device=device, beg_token=beg_token, end_token=end_token, adaptive=args.adaptive, samples=args.samples, train_data_support_944K=train_data_944K, rev_emb_dict=rev_emb_dict, first_order=args.first_order, fast_lr=args.fast_lr, meta_optimizer_lr=args.meta_lr, dial_shown=False, dict=dict944k, dict_weak=dict944k_weak, steps=args.steps, weak_flag=args.weak, query_embed = args.query_embed)
     log.info("Meta-learner: %d inner steps, %f inner learning rate, "
              "%d outer steps, %f outer learning rate, using weak mode:%s, retriever random model:%s"
              %(args.steps, args.fast_lr, args.batches, args.meta_lr, str(args.weak), str(args.retriever_random)))
@@ -232,7 +217,7 @@ if __name__ == "__main__":
 
                 # Batch is represented for a batch of tasks in MAML.
                 # In each task, a minibatch of support set is established.
-                meta_losses, running_vars, meta_total_samples, meta_skipped_samples, true_reward_argmax_batch, true_reward_sample_batch = metaLearner.reptile_sample(batch, old_param_dict = old_param_dict, dial_shown=dial_shown, epoch_count=epoch, batch_count=batch_count, docID_dict=docID_dict, rev_docID_dict=rev_docID_dict, emb_dict=emb_dict, qtype_docs_range=qtype_docs_range, random=args.retriever_random, monte_carlo=args.MonteCarlo)
+                meta_losses, running_vars, meta_total_samples, meta_skipped_samples, true_reward_argmax_batch, true_reward_sample_batch = metaLearner.reptile_sample(batch, old_param_dict=old_param_dict, dial_shown=dial_shown, epoch_count=epoch, batch_count=batch_count, docID_dict=docID_dict, rev_docID_dict=rev_docID_dict, emb_dict=emb_dict, qtype_docs_range=qtype_docs_range, random=args.retriever_random, monte_carlo=args.MonteCarlo)
                 total_samples += meta_total_samples
                 skipped_samples += meta_skipped_samples
                 true_reward_argmax.extend(true_reward_argmax_batch)

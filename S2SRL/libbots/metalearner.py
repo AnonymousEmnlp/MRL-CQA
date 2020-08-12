@@ -28,7 +28,7 @@ class MetaLearner(object):
         Pieter Abbeel, "Trust Region Policy Optimization", 2015
         (https://arxiv.org/abs/1502.05477)
     """
-    def __init__(self, net=None, retriever_net = None, device='cpu', beg_token=None, end_token = None, adaptive=False, samples=5, train_data_support_944K=None, rev_emb_dict=None, first_order=False, fast_lr=0.001, meta_optimizer_lr=0.0001, dial_shown = False, dict=None, dict_weak=None, steps=5, weak_flag=False, query_embed=True):
+    def __init__(self, net=None, retriever_net=None, device='cpu', beg_token=None, end_token = None, adaptive=False, samples=5, train_data_support_944K=None, rev_emb_dict=None, first_order=False, fast_lr=0.001, meta_optimizer_lr=0.0001, dial_shown = False, dict=None, dict_weak=None, steps=5, weak_flag=False, query_embed=True):
         self.net = net
         self.retriever_net = retriever_net
         self.device = device
@@ -204,7 +204,7 @@ class MetaLearner(object):
         # get_top_N(train_data, train_data_support, N)
         # Support set is none. Use the training date per se as support set.
         batch = list()
-        if N==0:
+        if N == 0:
             batch.append(task)
         else:
             key_name, key_weak, question, qid = self.retriever.AnalyzeQuestion(task[1])
@@ -213,14 +213,14 @@ class MetaLearner(object):
                 qid = list(name.keys())[0] if len(name) > 0 else 'NONE'
                 if qid in train_data_support_944K:
                     batch.append(train_data_support_944K[qid])
-                if len(batch) ==N:
+                if len(batch) == N:
                     break
         return batch
 
     # Randomly select training samples as support set.
     def establish_random_support_set(self, task=None, N=5, train_data_support_944K=None):
         batch = list()
-        if N==0:
+        if N == 0:
             batch.append(task)
         else:
             key_name, key_weak, question, qid = self.retriever.AnalyzeQuestion(task[1])
@@ -229,7 +229,7 @@ class MetaLearner(object):
                 qid = list(name.keys())[0] if len(name) > 0 else 'NONE'
                 if qid in train_data_support_944K:
                     batch.append(train_data_support_944K[qid])
-                if len(batch) ==N:
+                if len(batch) == N:
                     break
         return batch
 
@@ -240,7 +240,7 @@ class MetaLearner(object):
         # Support set is none. Use the training date per se as support set.
         # temp_dict = self.retriever_net.get_retriever_net_parameter()
         batch = list()
-        if N==0:
+        if N == 0:
             batch.append(task)
         else:
             key_name, key_weak, question, qid = self.retriever.AnalyzeQuestion(task[1])
@@ -257,7 +257,7 @@ class MetaLearner(object):
             # order_temp = self.retriever_net.calculate_rank(logsoftmax_output.tolist())
             # first_index = 0
             # for i, temp in enumerate(order_temp):
-            #     if temp==1:
+            #     if temp == 1:
             #         first_index = i
             #         break
             order_list = orders[1].tolist()
@@ -266,7 +266,7 @@ class MetaLearner(object):
             for qid in topNList:
                 if qid in train_data_support_944K:
                     batch.append(train_data_support_944K[qid])
-                if len(batch)==N:
+                if len(batch) == N:
                     break
         return batch
 
@@ -1102,13 +1102,13 @@ class MetaLearner(object):
             self.net.zero_grad()
             # log.info("Task %s for reptile is training..." % (str(task[1]['qid'])))
             # Establish support set.
-            # If random_flag==True, randomly select support samples in the same question category.
+            # If random_flag == True, randomly select support samples in the same question category.
             if random:
                 support_set = self.establish_random_support_set(task=task, N=self.steps, train_data_support_944K=self.train_data_support_944K)
             else:
-                # support_set1 = self.establish_support_set(task=task, N=self.steps, weak=self.weak_flag, train_data_support_944K=self.train_data_support_944K)
+                support_set = self.establish_support_set(task=task, N=self.steps, weak=self.weak_flag, train_data_support_944K=self.train_data_support_944K)
                 # support_set_sample, logprob_list = self.establish_support_set_by_retriever_sampling(task=task, N=self.steps, train_data_support_944K=self.train_data_support_944K,docID_dict=docID_dict, rev_docID_dict=rev_docID_dict, emb_dict=emb_dict, qtype_docs_range=qtype_docs_range)
-                support_set = self.establish_support_set_by_retriever_argmax(task=task, N=self.steps, train_data_support_944K=self.train_data_support_944K, docID_dict=docID_dict, rev_docID_dict=rev_docID_dict, emb_dict=emb_dict, qtype_docs_range=qtype_docs_range)
+                # support_set = self.establish_support_set_by_retriever_argmax(task=task, N=self.steps, train_data_support_944K=self.train_data_support_944K, docID_dict=docID_dict, rev_docID_dict=rev_docID_dict, emb_dict=emb_dict, qtype_docs_range=qtype_docs_range)
 
             for step_sample in support_set:
                 self.inner_optimizer.zero_grad()
