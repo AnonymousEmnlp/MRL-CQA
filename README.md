@@ -1,8 +1,8 @@
 # MRL-CQA: for EMNLP 2020 submission.
 We aim to solve the CQA task [1], which is answering factual questions through complex inferring over a realistic-sized KG of millions of entities.  
-The CQA dataset could be downloaded from `https://amritasaha1812.github.io/CSQA/download_CQA/`.  
-
-The questions could be categorized into seven groups, and the typical examples of these seven question types are displayed in the following table.  
+We could check the details of the CQA dataset at `https://amritasaha1812.github.io/CSQA/download_CQA/`.  
+The questions in the CQA could be categorized into seven groups.  
+The typical examples of these seven question types are displayed in the following table.  
   
    Question Type   |  Question                              |  KB artifacts          |  Action Sequence   |        Answer
    -------- | --------  | -------- | --------| -------- |
