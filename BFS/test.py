@@ -53,7 +53,7 @@ def test_sparql(e='Q148',r = 'P17',t = 'Q4022'):
     r = requests.get(url)
     #print r.json()["results"]
     for e in r.json()["results"]["bindings"]:
-        entity =  e["river"]["value"].split("/")[-1]
+        entity = e["river"]["value"].split("/")[-1]
         anser_values.append(entity)
     answer_dict[e] = anser_values
 

@@ -83,12 +83,12 @@ def post_res():
 if __name__ == '__main__':
     print("loading knowledge base...")
     global graph
-    graph=pickle.load(open('/data/devin/data/wikidata.pkl','rb'))
+    graph = pickle.load(open('../data/bfs_data/wikidata.pkl','rb'))
     print("graph Load done!")
     global type_dict
-    type_dict=pickle.load(open('/data/devin/data/child_par.pkl','rb'))
+    type_dict = pickle.load(open('../data/bfs_data/child_par.pkl','rb'))
     print("type_dict Load done!",len(type_dict))
     global par_dict
-    par_dict = pickle.load(open('/data/devin/data/par_child.pkl', 'rb'))
+    par_dict = pickle.load(open('../data/bfs_data/par_child.pkl', 'rb'))
     print("par_dict Load done!")
     app.run(host='10.201.32.24', port=5566, use_debugger=True)
