@@ -60,7 +60,7 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
     # # command line parameters
     sys.argv = ['train_reptile_maml_true_reward.py', '-l=../data/saves/rl_even_TR_batch8_1%/truereward_0.739_29.dat',
-                '-n=maml_att=0_newdata2k_reptile_test', '--cuda', '-s=5', '-a=0', '--att=0', '--lstm=1', '--fast-lr=1e-4', '--meta-lr=1e-4', '--steps=5', '--batches=1', '--weak=1', '--beta=0.1']
+                '-n=maml_reptile', '--cuda', '-s=5', '-a=0', '--att=0', '--lstm=1', '--fast-lr=1e-4', '--meta-lr=1e-4', '--steps=5', '--batches=1', '--weak=1', '--beta=0.1']
     parser = argparse.ArgumentParser()
     parser.add_argument("--cuda", action='store_true', default=False, help="Enable cuda")
     parser.add_argument("-n", "--name", required=True, help="Name of the run")
