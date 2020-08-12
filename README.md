@@ -60,7 +60,7 @@ Now we will talk about how to training and testing our proposed model.
  Furthermore, we need some extra files in folder `MRL-CQA/data/auto_QA_data` for training the model: `share.question` (vocabulary), `CSQA_DENOTATIONS_full_944K.zip` (the file that records the information relevant to all the training questions), `CSQA_result_question_type_944K.json`, `CSQA_result_question_type_count944K.json`, `CSQA_result_question_type_count944k_orderlist.json`, and `944k_rangeDict.json` (the files that are used to retrieve the support sets).  
  Also, we have processed the training dataset and thus we need to download the file `RL_train_TR_new_2k.question` from the folder `MRL-CQA/data/auto_QA_data/mask_even_1.0%`.  
  
- All we need is to download aforementioned files from the data link and further put them under the corresponding folders in our project.   
+ All we need is to download the aforementioned files from the data link and further put them under the corresponding folders in our project.   
  Then in the folder `MRL-CQA/S2SRL`, we run the python file to train the MAML model: 
  ```
  python train_reptile_maml_true_reward.py
@@ -69,13 +69,13 @@ Now we will talk about how to training and testing our proposed model.
  
  ## 4. MAML testing.
   (1). Load trained model.  
-  The trained models are stored in the folder `MRL-CQA/data/saves/maml_reptile`.  
-  We also saved a trained model `epoch_020_0.784_0.741.zip` in this folder, which could lead to the SOTA result.  
-  We could download the model from the data link.  
-  When testing the model, we could choose a best model from all the saved models, or simply use the `epoch_020_0.784_0.741` model.  
+  The trained models will be stored in the folder `MRL-CQA/data/saves/maml_reptile`.  
+  We have saved a trained model `epoch_020_0.784_0.741.zip` in this folder, which could lead to the SOTA result.  
+  We could download such model from the data link.  
+  When testing the model, we could choose a best model from all the models that we trained, or simply use the saved model `epoch_020_0.784_0.741.dat`.  
   
   (2). Load the testing dataset.  
-  We also processed the testing dataset `SAMPLE_FINAL_MAML_test.question` (which is 1/20 of the full testing dataset) and `FINAL_MAML_test.question` (which is the full testing dataset), and saved them in the folder `MRL-CQA/data/auto_QA_data/mask_test`.  
+  We also have processed the testing dataset `SAMPLE_FINAL_MAML_test.question` (which is 1/20 of the full testing dataset) and `FINAL_MAML_test.question` (which is the full testing dataset), and saved them in the folder `MRL-CQA/data/auto_QA_data/mask_test`.  
   We could download the files from the data link and put them under the folder `MRL-CQA/data/auto_QA_data/mask_test` in the project.  
   
   (3). Testing.  
