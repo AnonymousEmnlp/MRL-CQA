@@ -104,5 +104,5 @@ Now we will talk about how to training and testing our proposed model.
   We download the file `CSQA_ANNOTATIONS_test.json` from the data link and put it into the folder `MRL-CQA/data/auto_QA_data/` of the project, which is used to record the ground-truth answers of each question.
   The result will be stored in the file `MRL-CQA/data/auto_QA_data/test_result/maml_reptile.txt`.  
   
- References:
+ References:  
  [1]. Amrita Saha, Vardaan Pahuja, Mitesh M Khapra, Karthik Sankaranarayanan, and Sarath Chandar. 2018. Complex sequential question answering: Towards learning to converse over linked question answer pairs with a knowledge graph. In ThirtySecond AAAI Conference on Artificial Intelligence.
