@@ -1,6 +1,9 @@
 # MRL-CQA: for EMNLP 2020 submission.
 We aim to solve the CQA task [1], which is answering factual questions through complex inferring over a realistic-sized KG of millions of entities.  
-We could check the details of the CQA dataset at `https://amritasaha1812.github.io/CSQA/download_CQA/`.  
+We could check the details of the CQA dataset [here](https://amritasaha1812.github.io/CSQA/download_CQA/).  
+All the materials required for running the KG sever, training the model, and testing in this task could be downloaded from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing).  
+Follow this read.me, we will instruct how to use the relevant data from the data link.    
+
 The questions in the CQA could be categorized into seven groups.  
 The typical examples of these seven question types are displayed in the following table.  
   
@@ -26,7 +29,7 @@ Now we will talk about how to training and testing our proposed model.
  (6). flask = 1.1.1  
  (7). requests = 2.22.0  
   
- All the materials required for running the KG sever, training the model, and inferring could be found from the data link: `https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing`.
+All the materials required for running the KG sever, training the model, and inferring could be found from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing).  
   
 ## 2. Accessing knowledge graph.
  (1). Assign the IP address and the port number for the KG server.    
@@ -44,7 +47,7 @@ Now we will talk about how to training and testing our proposed model.
  ```
   
  (2). Run the KG server.  
- Download the bfs data `bfs_data.zip` from the provided data link.   
+ Download the bfs data `bfs_data.zip` from the provided [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing).   
  We need to uncompress the file `bfs_data.zip` and copy the three pkl files into the folder `MRL-CQA/data/bfs_data`.   
  Run the file `MRL-CQA/BFS/server.py` to activate the KG server for retrieval: 
  ```
@@ -54,13 +57,13 @@ Now we will talk about how to training and testing our proposed model.
  ## 3. MAML training.
  (1). Load pre-trained model.  
  We pre-trained a model based on Reinforcement learning, and further trained our MAML model on the basis of the RL model.   
- We could download and uncompress the RL model `truereward_0.739_29.zip` in the folder `MRL-CQA/data/saves/rl_even_TR_batch8_1%` from the provided data link.  
+ We could download and uncompress the RL model `truereward_0.739_29.zip` in the folder `MRL-CQA/data/saves/rl_even_TR_batch8_1%` from the provided [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing).  
  
  (2). Train the MAML model.  
  Furthermore, we need some extra files in folder `MRL-CQA/data/auto_QA_data` for training the model: `share.question` (vocabulary), `CSQA_DENOTATIONS_full_944K.zip` (the file that records the information relevant to all the training questions), `CSQA_result_question_type_944K.json`, `CSQA_result_question_type_count944K.json`, `CSQA_result_question_type_count944k_orderlist.json`, and `944k_rangeDict.json` (the files that are used to retrieve the support sets).  
  Also, we have processed the training dataset and thus we need to download the file `RL_train_TR_new_2k.question` from the folder `MRL-CQA/data/auto_QA_data/mask_even_1.0%`.  
  
- All we need is to download the aforementioned files from the data link and further put them under the corresponding folders in our project.   
+ All we need is to download the aforementioned files from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing) and further put them under the corresponding folders in our project.   
  Then in the folder `MRL-CQA/S2SRL`, we run the python file to train the MAML model: 
  ```
  python train_reptile_maml_true_reward.py
@@ -71,12 +74,12 @@ Now we will talk about how to training and testing our proposed model.
   (1). Load trained model.  
   The trained models will be stored in the folder `MRL-CQA/data/saves/maml_reptile`.  
   We have saved a trained model `epoch_020_0.784_0.741.zip` in this folder, which could lead to the SOTA result.  
-  We could download such model from the data link.  
+  We could download such model from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing).  
   When testing the model, we could choose a best model from all the models that we trained, or simply use the saved model `epoch_020_0.784_0.741.dat`.  
   
   (2). Load the testing dataset.  
   We also have processed the testing dataset `SAMPLE_FINAL_MAML_test.question` (which is 1/20 of the full testing dataset) and `FINAL_MAML_test.question` (which is the full testing dataset), and saved them in the folder `MRL-CQA/data/auto_QA_data/mask_test`.  
-  We could download the files from the data link and put them under the folder `MRL-CQA/data/auto_QA_data/mask_test` in the project.  
+  We could download the files from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing) and put them under the folder `MRL-CQA/data/auto_QA_data/mask_test` in the project.  
   
   (3). Testing.  
   In the file `MRL-CQA/S2SRL/data_test_maml.py`, we could change the parameter following to meed our requirement.  
@@ -111,7 +114,7 @@ Now we will talk about how to training and testing our proposed model.
   ```
   python calculate_sample_test_dataset.py
   ```
-  We download the file `CSQA_ANNOTATIONS_test.json` from the data link and put it into the folder `MRL-CQA/data/auto_QA_data/` of the project, which is used to record the ground-truth answers of each question.  
+  We download the file `CSQA_ANNOTATIONS_test.json` from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing) and put it into the folder `MRL-CQA/data/auto_QA_data/` of the project, which is used to record the ground-truth answers of each question.  
   The result will be stored in the file `MRL-CQA/data/auto_QA_data/test_result/maml_reptile.txt`.  
   
  References:  

@@ -1,0 +1,2 @@
+  The files in the folder is used to run the KG server.  
+  The the files could be downloaded from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing).   
