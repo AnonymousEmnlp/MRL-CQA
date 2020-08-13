@@ -1,2 +1,2 @@
-  The pre-trained model, which is trained by using MAML, is saved here.  
+  The model which was trained by using MAML is saved here.  
   The model could be downloaded from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing).   
