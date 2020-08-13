@@ -2,7 +2,7 @@
 We aim to solve the CQA task [1], which is answering factual questions through complex inferring over a realistic-sized KG of millions of entities.  
 We could check the details of the CQA dataset [here](https://amritasaha1812.github.io/CSQA/download_CQA/).  
 All the materials required for running the KG sever, training the model, and testing in this task could be downloaded from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing).  
-Follow this read.me, we will instruct how to use the relevant data from the data link.    
+Follow this README, we will instruct how to use the relevant data from the data link.    
 
 The questions in the CQA could be categorized into seven groups.  
 The typical examples of these seven question types are displayed in the following table.  
