@@ -1,1 +1,1 @@
-The folder is used to record the test result for test dataset by using log.
+The folder is used to record the test result by using log.
