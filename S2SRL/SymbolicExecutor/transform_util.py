@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2019/9/1 23:36
-# @Author  : Devin Hua
-# Function: transforming.
+# Function : transforming.
 
 # Transform boolean results into string format.
 def transformBooleanToString(list):

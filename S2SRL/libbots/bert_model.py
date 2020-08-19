@@ -6,7 +6,6 @@ import torch.nn.utils.rnn as rnn_utils
 import torch.nn.functional as F
 from transformers import BertModel, BertTokenizer, AdamW, get_linear_schedule_with_warmup
 
-from collections import OrderedDict
 from . import utils
 from . import attention
 from . import beam_search_node

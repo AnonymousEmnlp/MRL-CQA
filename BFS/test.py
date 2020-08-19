@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2019/2/25 21:50
-# @Author  : Yaoleo
-# @Blog    : yaoleo.github.io
 import json
 import pickle
 from urllib.parse import urlencode

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2019/4/8 21:02
-# @Author  : Yaoleo
-# @Blog    : yaoleo.github.io
 
 # coding:utf-8
 '''Get all questions, annotated actions, entities, relations, types together in JSON format.
