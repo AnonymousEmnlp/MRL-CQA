@@ -82,7 +82,7 @@ All the materials required for running the KG sever, training the model, and tes
   We could download the files from the [data link](https://drive.google.com/drive/folders/1_3j6QsrLM2Sbq4e79ZpoBfUfkAUnt8iV?usp=sharing) and put them under the folder `MRL-CQA/data/auto_QA_data/mask_test` in the project.  
   
   (3). Testing.  
-  In the file `MRL-CQA/S2SRL/data_test_maml.py`, we could change the parameter following to meet our requirement.  
+  In the file `MRL-CQA/S2SRL/data_test_maml.py`, we could change the parameters to meet our requirement.  
   In the command line: 
   ```
   sys.argv = ['data_test_maml.py', '-m=epoch_020_0.784_0.741.dat', '-p=sample_final_maml',
