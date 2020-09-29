@@ -29,7 +29,7 @@ MAX_MEMORY_BUFFER_SIZE = 10
 ALPHA = 0.1
 
 DIC_PATH = '../data/auto_QA_data/share.question'
-TRAIN_QUESTION_ANSWER_PATH = '../data/auto_QA_data/mask_even_1.0%/RL_train_TR_new_2k.question'
+TRAIN_QUESTION_ANSWER_PATH = '../data/auto_QA_data/nsm_mask_even_1.0%/RL_train_TR.question'
 log = logging.getLogger("train")
 
 
