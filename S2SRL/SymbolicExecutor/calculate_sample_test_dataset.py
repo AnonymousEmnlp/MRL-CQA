@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2019/4/8 21:02
+# @Author  : Yaoleo
+# @Blog    : yaoleo.github.io
 
 # coding:utf-8
 '''Get all questions, annotated actions, entities, relations, types together in JSON format.
@@ -187,7 +189,7 @@ def transMask2ActionMAML(state, withint):
         path = '../../data/auto_QA_data/CSQA_ANNOTATIONS_test_INT.json'
     else:
         path = '../../data/auto_QA_data/CSQA_ANNOTATIONS_test.json'
-    with open(path, 'r') as load_f, open("../../data/saves/maml_reptile/sample_final_maml_predict.actions", 'r') as predict_actions:
+    with open(path, 'r') as load_f, open("../../data/saves/maml_reptile/final_maml_predict.actions", 'r') as predict_actions:
         # with open("../../data/auto_QA_data/CSQA_ANNOTATIONS_test.json", 'r') as load_f, open("../../data/saves/rl_even_TR_batch8_1%/final_predict.actions", 'r') as predict_actions \
         #         , open("../../data/auto_QA_data/mask_test/FINAL_test.question", 'r') as RL_test:
         linelist = list()
@@ -382,4 +384,4 @@ def calculate_MAML_result(file_path, withint):
 
 if __name__ == "__main__":
     # calculate_RL_or_DL_result('crossent_even_1%_att=0_withINT', withint=True)
-    calculate_MAML_result('maml_reptile', withint=False)
+    calculate_MAML_result('maml_reptile_full_test', withint=False)
