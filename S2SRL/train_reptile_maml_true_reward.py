@@ -185,7 +185,7 @@ if __name__ == "__main__":
     beg_token = torch.LongTensor([emb_dict[data.BEGIN_TOKEN]]).to(device)
     beg_token = beg_token.cuda()
 
-    metaLearner = metalearner.MetaLearner(net=net, device=device, beg_token=beg_token, end_token=end_token, adaptive=args.adaptive, samples=args.samples, train_data_support_944K=train_data_944K, rev_emb_dict=rev_emb_dict, first_order=args.first_order, fast_lr=args.fast_lr, meta_optimizer_lr=args.meta_lr, dial_shown=False, dict=dict944k, dict_weak=dict944k_weak, steps=args.steps, weak_flag=args.weak, query_embed = args.query_embed)
+    metaLearner = metalearner.MetaLearner(net=net, device=device, beg_token=beg_token, end_token=end_token, adaptive=args.adaptive, samples=args.samples, train_data_support_944K=train_data_944K, rev_emb_dict=rev_emb_dict, first_order=args.first_order, fast_lr=args.fast_lr, meta_optimizer_lr=args.meta_lr, dial_shown=False, dict=dict944k, dict_weak=dict944k_weak, steps=args.steps, weak_flag=args.weak, query_embed=args.query_embed)
     log.info("Meta-learner: %d inner steps, %f inner learning rate, "
              "%d outer steps, %f outer learning rate, using weak mode:%s, retriever random model:%s"
              %(args.steps, args.fast_lr, args.batches, args.meta_lr, str(args.weak), str(args.retriever_random)))
