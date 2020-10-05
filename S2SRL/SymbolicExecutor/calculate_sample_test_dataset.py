@@ -12,18 +12,14 @@ from symbolics import Symbolics
 from transform_util import transformBooleanToString, list2dict
 import logging
 
-log = logging.basicConfig(level = logging.INFO,
-                           filename ='../../data/auto_QA_data/test_result/maml_reptile_full_test.log',
-                           filemode ='w', format = '%(message)s')
-
 def transMask2Action(state, withint):
     if withint:
         json_path = '../../data/auto_QA_data/CSQA_ANNOTATIONS_test_INT.json'
-        question_path = '../../data/auto_QA_data/mask_test/SAMPLE_FINAL_INT_test.question'
+        question_path = '../../data/auto_QA_data/mask_test/SAMPLE_FINAL_INT.question'
     else:
         json_path = '../../data/auto_QA_data/CSQA_ANNOTATIONS_test.json'
         question_path = '../../data/auto_QA_data/mask_test/SAMPLE_FINAL_test.question'
-    with open(json_path, 'r') as load_f, open("../../data/saves/crossent_even_1%_att=0_withINT/sample_final_int_predict.actions", 'r') as predict_actions \
+    with open(json_path, 'r') as load_f, open("../../data/saves/rl_TR_1%_batch8_NSM/sample_final_predict.actions", 'r') as predict_actions \
             , open(question_path, 'r') as RL_test:
         # with open("../../data/auto_QA_data/CSQA_ANNOTATIONS_test.json", 'r') as load_f, open("../../data/saves/rl_even_TR_batch8_1%/final_predict.actions", 'r') as predict_actions \
         #         , open("../../data/auto_QA_data/mask_test/FINAL_test.question", 'r') as RL_test:
@@ -387,5 +383,5 @@ def calculate_MAML_result(file_path, withint):
     fw.close()
 
 if __name__ == "__main__":
-    # calculate_RL_or_DL_result('crossent_even_1%_att=0_withINT', withint=True)
-    calculate_MAML_result('maml_reptile_full_test', withint=False)
+    calculate_RL_or_DL_result('rl_TR_1%_batch8_NSM', withint=False)
+    # calculate_MAML_result('maml_reptile_full_test', withint=False)
