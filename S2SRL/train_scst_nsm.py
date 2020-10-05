@@ -260,6 +260,7 @@ if __name__ == "__main__":
                                                                                topk=args.samples)
 
                     qid = qa_info['qid']
+                    log.logger.info("%s is training...", qid)
 
                     # The data for each task in a batch of tasks.
                     inner_net_policies = []
@@ -459,5 +460,4 @@ if __name__ == "__main__":
 
         time_end = time.time()
         log.logger.info("Training time is %.3fs." % (time_end - time_start))
-        print("Training time is %.3fs." % (time_end - time_start))
     writer.close()
