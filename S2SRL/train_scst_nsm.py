@@ -459,5 +459,4 @@ if __name__ == "__main__":
 
         time_end = time.time()
         log.logger.info("Training time is %.3fs." % (time_end - time_start))
-        print("Training time is %.3fs." % (time_end - time_start))
     writer.close()
