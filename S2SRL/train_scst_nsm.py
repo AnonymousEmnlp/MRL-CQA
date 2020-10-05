@@ -260,6 +260,7 @@ if __name__ == "__main__":
                                                                                topk=args.samples)
 
                     qid = qa_info['qid']
+                    log.logger.info("%s is training...", qid)
 
                     # The data for each task in a batch of tasks.
                     inner_net_policies = []
