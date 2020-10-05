@@ -12,6 +12,10 @@ from symbolics import Symbolics
 from transform_util import transformBooleanToString, list2dict
 import logging
 
+log = logging.basicConfig(level = logging.INFO,
+                           filename ='../../data/auto_QA_data/test_result/maml_reptile_full_test.log',
+                           filemode ='w', format = '%(message)s')
+
 def transMask2Action(state, withint):
     if withint:
         json_path = '../../data/auto_QA_data/CSQA_ANNOTATIONS_test_INT.json'

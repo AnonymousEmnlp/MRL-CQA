@@ -6,7 +6,7 @@ import argparse
 import logging
 import numpy as np
 from tensorboardX import SummaryWriter
-from libbots import data, model, utils
+from libbots import data, model, utils, logger
 
 import torch
 import torch.optim as optim
@@ -30,8 +30,8 @@ ALPHA = 0.1
 
 DIC_PATH = '../data/auto_QA_data/share.question'
 TRAIN_QUESTION_ANSWER_PATH = '../data/auto_QA_data/nsm_mask_even_1.0%/RL_train_TR.question'
-log = logging.getLogger("train")
 
+log = logger.Loggers(filename='nsm_training', level='info', log_dir='../data/saves/rl_TR_1%_batch8_NSM/')
 
 # Calculate 0-1 sparse reward for samples in test dataset to judge the performance of the model.
 def run_test(test_data, net, rev_emb_dict, end_token, device="cuda"):
@@ -62,7 +62,6 @@ def run_test(test_data, net, rev_emb_dict, end_token, device="cuda"):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
     # command line parameters
     # -a=True means using adaptive reward to train the model. -a=False is using 0-1 reward.
     sys.argv = ['train_scst_nsm.py', '--cuda',
@@ -99,15 +98,16 @@ if __name__ == "__main__":
     parser.add_argument("--MonteCarlo", action='store_true', default=False,
                         help="using Monte Carlo algorithm for REINFORCE")
     args = parser.parse_args()
-    device = torch.device("cuda" if args.cuda else "cpu")
-    log.info("Device info: %s", str(device))
 
     saves_path = os.path.join(SAVES_DIR, args.name)
     os.makedirs(saves_path, exist_ok=True)
 
+    device = torch.device("cuda" if args.cuda else "cpu")
+    log.logger.info("Device info: %s", str(device))
+
     # # List of (question, {question information and answer}) pairs, the training pairs are in format of 1:1.
     phrase_pairs, emb_dict = data.load_RL_data_TR(TRAIN_QUESTION_ANSWER_PATH, DIC_PATH, MAX_TOKENS, bool(args.NSM))
-    log.info("Obtained %d phrase pairs with %d uniq words from %s...", len(phrase_pairs),
+    log.logger.info("Obtained %d phrase pairs with %d uniq words from %s...", len(phrase_pairs),
              len(emb_dict), TRAIN_QUESTION_ANSWER_PATH)
 
     data.save_emb_dict(saves_path, emb_dict)
@@ -119,22 +119,22 @@ if __name__ == "__main__":
     rand = np.random.RandomState(data.SHUFFLE_SEED)
     rand.shuffle(train_data)
     train_data, test_data = data.split_train_test(train_data, TRAIN_RATIO)
-    log.info("Training data converted, got %d samples", len(train_data))
-    log.info("Train set has %d phrases, test %d", len(train_data), len(test_data))
-    log.info("Batch size is %d", BATCH_SIZE)
-    log.info("Beam search size is %d", args.beam_width)
+    log.logger.info("Training data converted, got %d samples", len(train_data))
+    log.logger.info("Train set has %d phrases, test %d", len(train_data), len(test_data))
+    log.logger.info("Batch size is %d", BATCH_SIZE)
+    log.logger.info("Beam search size is %d", args.beam_width)
     if args.att:
-        log.info("Using attention mechanism to train the SEQ2SEQ model...")
+        log.logger.info("Using attention mechanism to train the SEQ2SEQ model...")
     else:
-        log.info("Train the SEQ2SEQ model without attention mechanism...")
+        log.logger.info("Train the SEQ2SEQ model without attention mechanism...")
     if args.lstm:
-        log.info("Using LSTM mechanism to train the SEQ2SEQ model...")
+        log.logger.info("Using LSTM mechanism to train the SEQ2SEQ model...")
     else:
-        log.info("Using RNN mechanism to train the SEQ2SEQ model...")
+        log.logger.info("Using RNN mechanism to train the SEQ2SEQ model...")
     if args.MonteCarlo:
-        log.info("Using Monte Carlo algorithm for Policy Gradient...")
+        log.logger.info("Using Monte Carlo algorithm for Policy Gradient...")
     if args.NSM:
-        log.info("Using Neural Symbolic Machine algorithm for RL...")
+        log.logger.info("Using Neural Symbolic Machine algorithm for RL...")
 
     # Index -> word.
     rev_emb_dict = {idx: word for word, idx in emb_dict.items()}
@@ -143,16 +143,16 @@ if __name__ == "__main__":
                             LSTM_FLAG=args.lstm, ATT_FLAG=args.att).to(device)
     # Using cuda.
     net.cuda()
-    log.info("Model: %s", net)
+    log.logger.info("Model: %s", net)
 
     writer = SummaryWriter(comment="-" + args.name)
     # Load the pre-trained seq2seq model.
     net.load_state_dict(torch.load(args.load))
-    log.info("Model loaded from %s, continue training in RL mode...", args.load)
+    log.logger.info("Model loaded from %s, continue training in RL mode...", args.load)
     if (args.adaptive):
-        log.info("Using adaptive reward to train the REINFORCE model...")
+        log.logger.info("Using adaptive reward to train the REINFORCE model...")
     else:
-        log.info("Using 0-1 sparse reward to train the REINFORCE model...")
+        log.logger.info("Using 0-1 sparse reward to train the REINFORCE model...")
 
     # BEGIN token
     beg_token = torch.LongTensor([emb_dict[data.BEGIN_TOKEN]]).to(device)
@@ -246,10 +246,10 @@ if __name__ == "__main__":
                     # After that, all samples in this epoch don't display anymore.
                     if not dial_shown:
                         # data.decode_words transform IDs to tokens.
-                        log.info("Input: %s", utils.untokenize(data.decode_words(inp_idx, rev_emb_dict)))
+                        log.logger.info("Input: %s", utils.untokenize(data.decode_words(inp_idx, rev_emb_dict)))
                         orig_response = qa_info['orig_response']
-                        log.info("orig_response: %s", orig_response)
-                        log.info("Argmax: %s, reward=%.4f", utils.untokenize(data.decode_words(actions, rev_emb_dict)),
+                        log.logger.info("orig_response: %s", orig_response)
+                        log.logger.info("Argmax: %s, reward=%.4f", utils.untokenize(data.decode_words(actions, rev_emb_dict)),
                                  argmax_reward)
 
                     sample_logits_list, action_sequence_list = net.beam_decode(hid=item_enc, seq_len=data.MAX_TOKENS,
@@ -288,7 +288,7 @@ if __name__ == "__main__":
                         # sample_reward = random.random()
 
                         if not dial_shown:
-                            log.info("Sample: %s, reward=%.4f",
+                            log.logger.info("Sample: %s, reward=%.4f",
                                      utils.untokenize(data.decode_words(actions, rev_emb_dict)), sample_reward)
 
                         if args.MonteCarlo:
@@ -432,7 +432,7 @@ if __name__ == "__main__":
                     tb_tracker.track("advantage", adv_v, batch_idx)
                 tb_tracker.track("loss_total", loss_v, batch_idx)
 
-                log.info("Epoch %d, Batch %d is trained!", epoch, batch_count)
+                log.logger.info("Epoch %d, Batch %d is trained!", epoch, batch_count)
 
             # After one epoch, compute the bleus for samples in test dataset.
             true_reward_test = run_test(test_data, net, rev_emb_dict, end_token, str(device))
@@ -443,12 +443,12 @@ if __name__ == "__main__":
             # After one epoch, get the average of the decode_chain_sampling bleus for samples in training dataset.
             writer.add_scalar("true_reward_sample", np.mean(true_reward_sample), batch_idx)
             # writer.add_scalar("skipped_samples", skipped_samples/total_samples if total_samples!=0 else 0, batch_idx)
-            # log.info("Batch %d, skipped_samples: %d, total_samples: %d", batch_idx, skipped_samples, total_samples)
+            # log.logger.info("Batch %d, skipped_samples: %d, total_samples: %d", batch_idx, skipped_samples, total_samples)
             writer.add_scalar("epoch", batch_idx, epoch)
-            log.info("Epoch %d, test reward: %.3f", epoch, true_reward_test)
+            log.logger.info("Epoch %d, test reward: %.3f", epoch, true_reward_test)
             if best_true_reward is None or best_true_reward < true_reward_test:
                 best_true_reward = true_reward_test
-                log.info("Best true reward updated: %.4f", true_reward_test)
+                log.logger.info("Best true reward updated: %.4f", true_reward_test)
                 # Save the updated seq2seq parameters trained by RL.
                 torch.save(net.state_dict(),
                            os.path.join(saves_path, "truereward_%.3f_%02d.dat" % (true_reward_test, epoch)))
@@ -458,6 +458,6 @@ if __name__ == "__main__":
                 epoch, float(true_reward_armax), true_reward_test)))
 
         time_end = time.time()
-        log.info("Training time is %.3fs." % (time_end - time_start))
+        log.logger.info("Training time is %.3fs." % (time_end - time_start))
         print("Training time is %.3fs." % (time_end - time_start))
     writer.close()

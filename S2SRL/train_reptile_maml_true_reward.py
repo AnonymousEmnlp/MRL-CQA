@@ -6,7 +6,7 @@ import argparse
 import logging
 import numpy as np
 from tensorboardX import SummaryWriter
-from libbots import data, model, utils, metalearner
+from libbots import data, model, utils, metalearner, logger
 
 import torch
 import time
@@ -26,7 +26,7 @@ DICT_944K = '../data/auto_QA_data/CSQA_result_question_type_944K.json'
 DICT_944K_WEAK = '../data/auto_QA_data/CSQA_result_question_type_count944K.json'
 ORDERED_QID_QUESTION_DICT = '../data/auto_QA_data/CSQA_result_question_type_count944k_orderlist.json'
 QTYPE_DOC_RANGE = '../data/auto_QA_data/944k_rangeDict.json'
-log = logging.getLogger("train")
+log = logger.Loggers(filename='train_reptile_maml_true_reward', level='info', log_dir='../data/saves/maml_reptile/')
 
 # Calculate 0-1 sparse reward for samples in test dataset to judge the performance of the model.
 def run_test(test_data, net, rev_emb_dict, end_token, device="cuda"):
@@ -103,16 +103,16 @@ if __name__ == "__main__":
                         help="using Monte Carlo algorithm for REINFORCE")
     args = parser.parse_args()
     device = torch.device("cuda" if args.cuda else "cpu")
-    log.info("Device info: %s", str(device))
+    log.logger.info("Device info: %s", str(device))
 
     saves_path = os.path.join(SAVES_DIR, args.name)
     os.makedirs(saves_path, exist_ok=True)
 
     # # List of (question, {question information and answer}) pairs, the training pairs are in format of 1:1.
     phrase_pairs, emb_dict = data.load_data_MAML(QUESTION_PATH=TRAIN_QUESTION_ANSWER_PATH, DIC_PATH=DIC_PATH, max_tokens=MAX_TOKENS)
-    log.info("Obtained %d phrase pairs with %d uniq words from %s.", len(phrase_pairs), len(emb_dict), TRAIN_QUESTION_ANSWER_PATH)
+    log.logger.info("Obtained %d phrase pairs with %d uniq words from %s.", len(phrase_pairs), len(emb_dict), TRAIN_QUESTION_ANSWER_PATH)
     phrase_pairs_944K = data.load_data_MAML(QUESTION_PATH=TRAIN_944K_QUESTION_ANSWER_PATH, max_tokens = MAX_TOKENS)
-    log.info("Obtained %d phrase pairs from %s.", len(phrase_pairs_944K), TRAIN_944K_QUESTION_ANSWER_PATH)
+    log.logger.info("Obtained %d phrase pairs from %s.", len(phrase_pairs_944K), TRAIN_944K_QUESTION_ANSWER_PATH)
     data.save_emb_dict(saves_path, emb_dict)
     end_token = emb_dict[data.END_TOKEN]
     # Transform token into index in dictionary.
@@ -125,36 +125,36 @@ if __name__ == "__main__":
     train_data_944K = data.group_train_data_RLTR_for_support(train_data_944K)
 
     dict944k = data.get944k(DICT_944K)
-    log.info("Reading dict944k from %s is done. %d pairs in dict944k.", DICT_944K, len(dict944k))
+    log.logger.info("Reading dict944k from %s is done. %d pairs in dict944k.", DICT_944K, len(dict944k))
     dict944k_weak = data.get944k(DICT_944K_WEAK)
-    log.info("Reading dict944k_weak from %s is done. %d pairs in dict944k_weak", DICT_944K_WEAK, len(dict944k_weak))
+    log.logger.info("Reading dict944k_weak from %s is done. %d pairs in dict944k_weak", DICT_944K_WEAK, len(dict944k_weak))
 
     rand = np.random.RandomState(data.SHUFFLE_SEED)
     rand.shuffle(train_data)
     train_data, test_data = data.split_train_test(train_data, TRAIN_RATIO)
-    log.info("Training data converted, got %d samples", len(train_data))
-    log.info("Train set has %d phrases, test %d", len(train_data), len(test_data))
-    log.info("Batch size is %d", args.batches)
+    log.logger.info("Training data converted, got %d samples", len(train_data))
+    log.logger.info("Train set has %d phrases, test %d", len(train_data), len(test_data))
+    log.logger.info("Batch size is %d", args.batches)
     if args.att:
-        log.info("Using attention mechanism to train the SEQ2SEQ model...")
+        log.logger.info("Using attention mechanism to train the SEQ2SEQ model...")
     else:
-        log.info("Train the SEQ2SEQ model without attention mechanism...")
+        log.logger.info("Train the SEQ2SEQ model without attention mechanism...")
     if args.lstm:
-        log.info("Using LSTM mechanism to train the SEQ2SEQ model...")
+        log.logger.info("Using LSTM mechanism to train the SEQ2SEQ model...")
     else:
-        log.info("Using RNN mechanism to train the SEQ2SEQ model...")
+        log.logger.info("Using RNN mechanism to train the SEQ2SEQ model...")
     if args.embed_grad:
-        log.info("Word embedding in the model will be updated during the training...")
+        log.logger.info("Word embedding in the model will be updated during the training...")
     else:
-        log.info("Word embedding in the model will be fixed during the training...")
+        log.logger.info("Word embedding in the model will be fixed during the training...")
     if args.docembed_grad:
-        log.info("Document embedding in the retriever model will be updated during the training...")
+        log.logger.info("Document embedding in the retriever model will be updated during the training...")
     else:
-        log.info("Document embedding in the retriever model will be fixed during the training...")
+        log.logger.info("Document embedding in the retriever model will be fixed during the training...")
     if args.query_embed:
-        log.info("Using the sum of word embedding to represent the questions during the training...")
+        log.logger.info("Using the sum of word embedding to represent the questions during the training...")
     else:
-        log.info("Using the document_emb which is stored in the retriever model to represent the questions...")
+        log.logger.info("Using the document_emb which is stored in the retriever model to represent the questions...")
 
     # Index -> word.
     rev_emb_dict = {idx: word for word, idx in emb_dict.items()}
@@ -162,18 +162,18 @@ if __name__ == "__main__":
     net = model.PhraseModel(emb_size=model.EMBEDDING_DIM, dict_size=len(emb_dict), hid_size=model.HIDDEN_STATE_SIZE, LSTM_FLAG=args.lstm, ATT_FLAG=args.att, EMBED_FLAG=args.embed_grad).to(device)
     # Using CUDA.
     net.cuda()
-    log.info("Model: %s", net)
+    log.logger.info("Model: %s", net)
 
     # Load the pre-trained seq2seq model.
     net.load_state_dict(torch.load(args.load))
     # print("Pre-trained network params")
     # for name, param in net.named_parameters():
     #     print(name, param.shape)
-    log.info("Model loaded from %s, continue training in RL mode...", args.load)
+    log.logger.info("Model loaded from %s, continue training in RL mode...", args.load)
     if args.adaptive:
-        log.info("Using adaptive reward to train the REINFORCE model...")
+        log.logger.info("Using adaptive reward to train the REINFORCE model...")
     else:
-        log.info("Using 0-1 sparse reward to train the REINFORCE model...")
+        log.logger.info("Using 0-1 sparse reward to train the REINFORCE model...")
 
     docID_dict, _ = data.get_docID_indices(data.get_ordered_docID_document(ORDERED_QID_QUESTION_DICT))
     # Index -> qid.
@@ -185,8 +185,8 @@ if __name__ == "__main__":
     beg_token = torch.LongTensor([emb_dict[data.BEGIN_TOKEN]]).to(device)
     beg_token = beg_token.cuda()
 
-    metaLearner = metalearner.MetaLearner(net=net, device=device, beg_token=beg_token, end_token=end_token, adaptive=args.adaptive, samples=args.samples, train_data_support_944K=train_data_944K, rev_emb_dict=rev_emb_dict, first_order=args.first_order, fast_lr=args.fast_lr, meta_optimizer_lr=args.meta_lr, dial_shown=False, dict=dict944k, dict_weak=dict944k_weak, steps=args.steps, weak_flag=args.weak, query_embed = args.query_embed)
-    log.info("Meta-learner: %d inner steps, %f inner learning rate, "
+    metaLearner = metalearner.MetaLearner(net=net, device=device, beg_token=beg_token, end_token=end_token, adaptive=args.adaptive, samples=args.samples, train_data_support_944K=train_data_944K, rev_emb_dict=rev_emb_dict, first_order=args.first_order, fast_lr=args.fast_lr, meta_optimizer_lr=args.meta_lr, dial_shown=False, dict=dict944k, dict_weak=dict944k_weak, steps=args.steps, weak_flag=args.weak, query_embed=args.query_embed)
+    log.logger.info("Meta-learner: %d inner steps, %f inner learning rate, "
              "%d outer steps, %f outer learning rate, using weak mode:%s, retriever random model:%s"
              %(args.steps, args.fast_lr, args.batches, args.meta_lr, str(args.weak), str(args.retriever_random)))
 
@@ -238,17 +238,17 @@ if __name__ == "__main__":
             writer.add_scalar("true_reward_sample", np.mean(true_reward_sample), batch_idx)
             writer.add_scalar("skipped_samples", skipped_samples / total_samples if total_samples != 0 else 0,
                               batch_idx)
-            log.info("Batch %d, skipped_samples: %d, total_samples: %d", batch_idx, skipped_samples, total_samples)
+            log.logger.info("Batch %d, skipped_samples: %d, total_samples: %d", batch_idx, skipped_samples, total_samples)
             writer.add_scalar("epoch", batch_idx, epoch)
-            log.info("Epoch %d, test reward: %.3f", epoch, true_reward_test)
+            log.logger.info("Epoch %d, test reward: %.3f", epoch, true_reward_test)
             if best_true_reward is None or best_true_reward < true_reward_test:
                 best_true_reward = true_reward_test
-                log.info("Best true reward updated: %.4f", true_reward_test)
+                log.logger.info("Best true reward updated: %.4f", true_reward_test)
                 # Save the updated seq2seq parameters trained by RL.
                 torch.save(net.state_dict(), os.path.join(saves_path, "truereward_%.3f_%02d.dat" % (true_reward_test, epoch)))
             # # The parameters are stored after each epoch.
             torch.save(net.state_dict(), os.path.join(saves_path, "epoch_%03d_%.3f_%.3f.dat" % (epoch, float(true_reward_armax), true_reward_test)))
         time_end = time.time()
-        log.info("Training time is %.3fs." % (time_end - time_start))
+        log.logger.info("Training time is %.3fs." % (time_end - time_start))
         print("Training time is %.3fs." % (time_end - time_start))
     writer.close()
